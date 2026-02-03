@@ -14,7 +14,7 @@
 	title="Drag and Drop Demo"
 	description="This page will demonstrate drag and drop functionality with Konva canvas using boundary constraints and responsive sizing."
 >
-	{#snippet children({ width, height })}
+	{#snippet children({ stageWidth, stageHeight })}
 		<Layer>
 			<Rect
 				bind:x={rectX}
@@ -23,7 +23,7 @@
 				height={rectHeight}
 				fill="blue"
 				draggable
-				dragBoundFunc={createDragBound(width, height, rectWidth, rectHeight)}
+				dragBoundFunc={createDragBound(stageWidth, stageHeight, rectWidth, rectHeight)}
 				onmouseenter={dragCursor.grab}
 				onmouseleave={dragCursor.default}
 				onmousedown={dragCursor.grabbing}

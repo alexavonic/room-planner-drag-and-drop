@@ -1,35 +1,52 @@
 <script lang="ts">
-	import { Stage } from 'svelte-konva';
-	import type { Snippet } from 'svelte';
+	import { Stage, type KonvaEventHooks } from 'svelte-konva';
+	import { onMount, onDestroy, type Snippet } from 'svelte';
 
-	interface Props {
-		children: Snippet<[{ width: number; height: number }]>;
+	type Props = {
+		children: Snippet<[{ stageWidth: number; stageHeight: number }]>;
+		overlay?: Snippet;
 		title?: string;
 		description?: string;
-	}
+		stage?: ReturnType<typeof Stage> | undefined;
+		oncanvasdown?: (e: MouseEvent) => void;
+	} & KonvaEventHooks;
 
-	let { children, title, description }: Props = $props();
+	let {
+		children,
+		overlay,
+		title,
+		description,
+		oncanvasdown,
+		stage = $bindable(),
+		onpointerdblclick,
+		onpointerdown,
+		onpointerup,
+		onpointermove,
+		onmouseout,
+		onmousedown,
+		ontouchstart
+	}: Props = $props();
 
-	let width = $state(0);
-	let height = $state(0);
+	let stageWidth = $state(0);
+	let stageHeight = $state(0);
 
 	let canvasContainer: HTMLDivElement;
 
-	$effect(() => {
-		if (canvasContainer) {
-			const updateDimensions = () => {
-				const rect = canvasContainer.getBoundingClientRect();
-				width = rect.width;
-				height = rect.height;
-			};
+	function updateStageSize() {
+		if (!canvasContainer) return;
 
-			updateDimensions();
-			window.addEventListener('resize', updateDimensions);
+		const rect = canvasContainer.getBoundingClientRect();
+		stageWidth = rect.width;
+		stageHeight = rect.height;
+	}
 
-			return () => {
-				window.removeEventListener('resize', updateDimensions);
-			};
-		}
+	onMount(() => {
+		window.addEventListener('resize', updateStageSize);
+		updateStageSize();
+	});
+
+	onDestroy(() => {
+		window.removeEventListener('resize', updateStageSize);
 	});
 </script>
 
@@ -44,12 +61,30 @@
 			{/if}
 		</div>
 	{/if}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		bind:this={canvasContainer}
-		class="mx-8 mb-8 min-h-0 flex-1 border-2 border-dashed border-gray-400"
+		onmousedown={oncanvasdown}
+		class="relative mx-8 mb-8 min-h-0 flex-1 border-2 border-dashed border-gray-400"
 	>
-		<Stage {width} {height}>
-			{@render children({ width, height })}
+		<Stage
+			width={stageWidth}
+			height={stageHeight}
+			bind:this={stage}
+			{onpointerdblclick}
+			{onpointerdown}
+			{onpointerup}
+			{onpointermove}
+			{onmouseout}
+			{onmousedown}
+			{ontouchstart}
+		>
+			{@render children({ stageWidth, stageHeight })}
 		</Stage>
+
+		<!-- Overlay content (e.g., popup dialogs) -->
+		{#if overlay}
+			{@render overlay()}
+		{/if}
 	</div>
 </div>

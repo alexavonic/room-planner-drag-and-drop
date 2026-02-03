@@ -7,6 +7,12 @@
 			color: 'bg-blue-500'
 		},
 		{
+			path: '/context',
+			title: 'Context Menu',
+			description: 'Right-click context menu for object manipulation',
+			color: 'bg-red-500'
+		},
+		{
 			path: '/sidebar',
 			title: 'Sidebar',
 			description: 'Canvas with sidebar controls and object management',
@@ -17,12 +23,6 @@
 			title: 'Snap to Grid',
 			description: 'Objects that snap to grid for precise placement',
 			color: 'bg-purple-500'
-		},
-		{
-			path: '/context',
-			title: 'Context Menu',
-			description: 'Right-click context menu for object manipulation',
-			color: 'bg-red-500'
 		}
 	];
 </script>

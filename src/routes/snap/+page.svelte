@@ -14,7 +14,7 @@
 	title="Snap to Grid Demo"
 	description="This page will demonstrate snapping functionality with Konva canvas."
 >
-	{#snippet children({ width, height })}
+	{#snippet children({ stageWidth, stageHeight })}
 		<Layer>
 			<Rect
 				bind:x={rectX}
@@ -23,7 +23,7 @@
 				height={rectHeight}
 				fill="purple"
 				draggable
-				dragBoundFunc={createDragBound(width, height, rectWidth, rectHeight)}
+				dragBoundFunc={createDragBound(stageWidth, stageHeight, rectWidth, rectHeight)}
 				onmouseenter={dragCursor.grab}
 				onmouseleave={dragCursor.default}
 				onmousedown={dragCursor.grabbing}
