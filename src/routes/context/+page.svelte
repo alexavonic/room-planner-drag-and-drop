@@ -18,6 +18,8 @@
 		draggable: boolean;
 	}
 
+	const DELTA = 4; // pixels to move on arrow key press
+
 	let transformer: ReturnType<typeof Transformer> | undefined;
 	let copiedRect: Rectangle | null = null;
 	let selectedShapeName = $state<string>('');
@@ -54,8 +56,6 @@
 			draggable: true
 		}
 	]);
-
-	const DELTA = 4; // pixels to move on arrow key press
 
 	function handleStageMouseDown(e: KonvaMouseEvent) {
 		const target = e.target;
@@ -172,35 +172,33 @@
 	}
 
 	function handleOnKeyDown(e: KeyboardEvent) {
-		// Handle Ctrl+C (Copy)
-		if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedShapeName) {
-			e.preventDefault();
-			onCopy();
-		}
-
 		// Handle Ctrl+V (Paste)
 		if ((e.ctrlKey || e.metaKey) && e.key === 'v' && copiedRect) {
 			e.preventDefault();
 			onPaste();
+			return;
 		}
 
+		// Keys below require a selected shape
 		if (!selectedShapeName) return;
 
-		// Delete selected rectangle on 'Delete' or 'Backspace' key press
-		if (e.key === 'Delete' || e.key === 'Backspace') {
+		// Handle Ctrl+C (Copy)
+		if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
 			e.preventDefault();
+			onCopy();
+		} else if (e.key === 'Delete') {
+			e.preventDefault();
+			onDelete();
+		}
 
-			// Remove rectangle from array
-			rectangles = rectangles.filter((r) => r.name !== selectedShapeName);
-
-			// Clear selection
+		// Deselect on 'Escape' key press
+		else if (e.key === 'Escape') {
 			selectedShapeName = '';
 			updateTransformer();
-		} else if (e.key === 'Escape') {
-			// Deselect on 'Escape' key press
-			selectedShapeName = '';
-			updateTransformer();
-		} else if (e.key === 'ArrowUp') {
+		}
+
+		// Arrow key movement
+		else if (e.key === 'ArrowUp') {
 			handleArrowMove(e, 0, -DELTA);
 		} else if (e.key === 'ArrowDown') {
 			handleArrowMove(e, 0, DELTA);
@@ -212,37 +210,50 @@
 	}
 
 	function onCopy() {
-		if (selectedShapeName) {
-			const rect = rectangles.find((r) => r.name === selectedShapeName);
-			if (rect) {
-				copiedRect = { ...rect };
-			}
+		if (!selectedShapeName) return;
+
+		const rect = rectangles.find((r) => r.name === selectedShapeName);
+		if (rect) {
+			copiedRect = { ...rect };
 		}
 	}
 
 	function onPaste() {
-		if (copiedRect) {
-			// Generate unique name
-			const newName = generateUniqueName(copiedRect.name);
+		if (!copiedRect) return;
+		// Generate unique name
+		const newName = generateUniqueName(copiedRect.name);
 
-			// Create new rectangle offset from original
-			const newRect: Rectangle = {
-				...copiedRect,
-				name: newName,
-				x: copiedRect.x + 20,
-				y: copiedRect.y + 20
-			};
+		// Create new rectangle offset from original
+		const newRect: Rectangle = {
+			...copiedRect,
+			name: newName,
+			x: copiedRect.x + 20,
+			y: copiedRect.y + 20,
+			fill: Konva.Util.getRandomColor()
+		};
 
-			rectangles = [...rectangles, newRect];
-			selectedShapeName = newName;
+		rectangles = [...rectangles, newRect];
+		selectedShapeName = newName;
 
-			// Use requestAnimationFrame to wait for Konva to render the new node (fixes selection issue)
+		// Use requestAnimationFrame to wait for Konva to render the new node (fixes selection issue)
+		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
-				requestAnimationFrame(() => {
-					updateTransformer();
-				});
+				updateTransformer();
 			});
-		}
+		});
+	}
+
+	function onDuplicate() {
+		onCopy();
+		onPaste();
+	}
+
+	function onDelete() {
+		if (!selectedShapeName) return;
+		// Remove rectangle from array
+		rectangles = rectangles.filter((r) => r.name !== selectedShapeName);
+		selectedShapeName = '';
+		updateTransformer();
 	}
 
 	function generateUniqueName(baseName: string): string {
@@ -322,66 +333,75 @@
 					class="property-popup absolute top-4 right-4 w-64 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
 				>
 					<h3 class="mb-2 font-semibold text-gray-700">Properties</h3>
-					<div class="space-y-2 text-sm">
-						<div class="flex items-center justify-between gap-4">
-							<span class="text-gray-600">Name:</span>
-							<input
-								type="text"
-								class="w-full rounded border border-gray-300 px-2 py-1 font-mono"
-								value={selectedRect.name}
-								readonly
-							/>
-						</div>
-						<div class="flex items-center justify-between gap-4">
-							<span class="text-gray-600">X:</span>
-							<input
-								type="number"
-								class="w-20 rounded border border-gray-300 px-2 py-1 text-right font-mono"
-								value={Math.round(selectedRect.x)}
-								oninput={(e) =>
-									updateRectProperty(selectedRect.name, 'x', Number(e.currentTarget.value))}
-							/>
-						</div>
-						<div class="flex items-center justify-between gap-4">
-							<span class="text-gray-600">Y:</span>
-							<input
-								type="number"
-								class="w-20 rounded border border-gray-300 px-2 py-1 text-right font-mono"
-								value={Math.round(selectedRect.y)}
-								oninput={(e) =>
-									updateRectProperty(selectedRect.name, 'y', Number(e.currentTarget.value))}
-							/>
-						</div>
-						<div class="flex items-center justify-between gap-4">
-							<span class="text-gray-600">Width:</span>
-							<input
-								type="number"
-								class="w-20 rounded border border-gray-300 px-2 py-1 text-right font-mono"
-								value={Math.round(selectedRect.width)}
-								oninput={(e) =>
-									updateRectProperty(selectedRect.name, 'width', Number(e.currentTarget.value))}
-							/>
-						</div>
-						<div class="flex items-center justify-between gap-4">
-							<span class="text-gray-600">Height:</span>
-							<input
-								type="number"
-								class="w-20 rounded border border-gray-300 px-2 py-1 text-right font-mono"
-								value={Math.round(selectedRect.height)}
-								oninput={(e) =>
-									updateRectProperty(selectedRect.name, 'height', Number(e.currentTarget.value))}
-							/>
-						</div>
-						<div class="flex items-center justify-between gap-4">
-							<span class="text-gray-600">Rotation:</span>
-							<input
-								type="number"
-								class="w-20 rounded border border-gray-300 px-2 py-1 text-right font-mono"
-								value={Math.round(selectedRect.rotation)}
-								oninput={(e) =>
-									updateRectProperty(selectedRect.name, 'rotation', Number(e.currentTarget.value))}
-							/>
-						</div>
+					<div class="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 text-sm">
+						<span class="text-gray-600">Name:</span>
+						<input
+							type="text"
+							class="w-full rounded border border-gray-200 bg-gray-100 px-2 py-1 font-mono"
+							value={selectedRect.name}
+							readonly
+							disabled
+						/>
+
+						<span class="text-gray-600">X:</span>
+						<input
+							type="number"
+							class="w-full rounded border border-gray-300 px-2 py-1 font-mono"
+							value={Math.round(selectedRect.x)}
+							onkeydown={(e) => e.stopPropagation()}
+							oninput={(e) =>
+								updateRectProperty(selectedRect.name, 'x', Number(e.currentTarget.value))}
+						/>
+
+						<span class="text-gray-600">Y:</span>
+						<input
+							type="number"
+							class="w-full rounded border border-gray-300 px-2 py-1 font-mono"
+							value={Math.round(selectedRect.y)}
+							onkeydown={(e) => e.stopPropagation()}
+							oninput={(e) =>
+								updateRectProperty(selectedRect.name, 'y', Number(e.currentTarget.value))}
+						/>
+
+						<span class="text-gray-600">Width:</span>
+						<input
+							type="number"
+							class="w-full rounded border border-gray-300 px-2 py-1 font-mono"
+							value={Math.round(selectedRect.width)}
+							onkeydown={(e) => e.stopPropagation()}
+							oninput={(e) =>
+								updateRectProperty(selectedRect.name, 'width', Number(e.currentTarget.value))}
+						/>
+
+						<span class="text-gray-600">Height:</span>
+						<input
+							type="number"
+							class="w-full rounded border border-gray-300 px-2 py-1 font-mono"
+							value={Math.round(selectedRect.height)}
+							onkeydown={(e) => e.stopPropagation()}
+							oninput={(e) =>
+								updateRectProperty(selectedRect.name, 'height', Number(e.currentTarget.value))}
+						/>
+
+						<span class="text-gray-600">Rotation:</span>
+						<input
+							type="number"
+							class="w-full rounded border border-gray-300 px-2 py-1 font-mono"
+							value={Math.round(selectedRect.rotation)}
+							onkeydown={(e) => e.stopPropagation()}
+							oninput={(e) =>
+								updateRectProperty(selectedRect.name, 'rotation', Number(e.currentTarget.value))}
+						/>
+					</div>
+					<div class="mt-4 grid grid-cols-2 items-center gap-x-2">
+						<button
+							class="rounded bg-red-500 px-3 py-2 font-bold text-white hover:bg-red-700"
+							onclick={onDelete}>Delete</button
+						>
+						<button
+							class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+							onclick={onDuplicate}>Duplicate</button
+						>
 					</div>
 				</div>
 			{/if}
