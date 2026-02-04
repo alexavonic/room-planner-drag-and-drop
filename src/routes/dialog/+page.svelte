@@ -2,7 +2,7 @@
 	import Konva from 'konva';
 
 	import { Layer, Rect, Transformer } from 'svelte-konva';
-	import type { KonvaMouseEvent, KonvaPointerEvent } from 'svelte-konva';
+	import type { KonvaMouseEvent } from 'svelte-konva';
 
 	import ResponsiveStage from '$lib/components/ResponsiveStage.svelte';
 	import { createDragBound, dragCursor } from '$lib/utils/konva';
@@ -293,8 +293,8 @@
 </script>
 
 <ResponsiveStage
-	title="Context Menu Demo"
-	description="This page will demonstrate context menu functionality with Konva canvas."
+	title="Dialog Window Demo"
+	description="This page will demonstrate dialog window functionality in the canvas. Select rectangles to view and edit their properties in the dialog. Use keyboard shortcuts to copy, paste, move, and delete rectangles."
 	onmousedown={handleStageMouseDown}
 	oncanvasdown={handleCanvasMouseDown}
 	onkeydown={handleOnKeyDown}

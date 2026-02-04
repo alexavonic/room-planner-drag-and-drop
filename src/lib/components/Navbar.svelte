@@ -4,9 +4,9 @@
 	const navItems = [
 		{ path: '/', label: 'Home' },
 		{ path: '/drag', label: 'Drag' },
-		{ path: '/context', label: 'Context' },
-		{ path: '/sidebar', label: 'Sidebar' },
-		{ path: '/snap', label: 'Snap' }
+		{ path: '/dialog', label: 'Dialog' },
+		{ path: '/snap', label: 'Snap' },
+		{ path: '/sidebar', label: 'Sidebar' }
 	];
 </script>
 

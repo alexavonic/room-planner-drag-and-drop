@@ -7,22 +7,23 @@
 			color: 'bg-blue-500'
 		},
 		{
-			path: '/context',
-			title: 'Context Menu',
-			description: 'Right-click context menu for object manipulation',
+			path: '/dialog',
+			title: 'Dialog Window',
+			description:
+				'Dialog window for editing rectangle properties and managing objects with keyboard shortcuts',
 			color: 'bg-red-500'
-		},
-		{
-			path: '/sidebar',
-			title: 'Sidebar',
-			description: 'Canvas with sidebar controls and object management',
-			color: 'bg-green-500'
 		},
 		{
 			path: '/snap',
 			title: 'Snap to Grid',
 			description: 'Objects that snap to grid for precise placement',
 			color: 'bg-purple-500'
+		},
+		{
+			path: '/sidebar',
+			title: 'Sidebar',
+			description: 'Canvas with sidebar controls and object management',
+			color: 'bg-green-500'
 		}
 	];
 </script>

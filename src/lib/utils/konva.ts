@@ -2,11 +2,6 @@ import type Konva from 'konva';
 
 /**
  * Creates a drag boundary function that constrains an object within the canvas bounds
- * @param width - Canvas width
- * @param height - Canvas height
- * @param objectWidth - Width of the draggable object
- * @param objectHeight - Height of the draggable object
- * @returns A boundary function for Konva's dragBoundFunc
  */
 export function createDragBound(
 	width: number,
