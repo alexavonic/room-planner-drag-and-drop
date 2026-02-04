@@ -9,6 +9,7 @@
 		description?: string;
 		stage?: ReturnType<typeof Stage> | undefined;
 		oncanvasdown?: (e: MouseEvent) => void;
+		onkeydown?: (e: KeyboardEvent) => void;
 	} & KonvaEventHooks;
 
 	let {
@@ -17,6 +18,7 @@
 		title,
 		description,
 		oncanvasdown,
+		onkeydown,
 		stage = $bindable(),
 		onpointerdblclick,
 		onpointerdown,
@@ -62,9 +64,15 @@
 		</div>
 	{/if}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<div
 		bind:this={canvasContainer}
-		onmousedown={oncanvasdown}
+		onmousedown={(e) => {
+			canvasContainer.focus();
+			oncanvasdown?.(e);
+		}}
+		{onkeydown}
+		tabindex="0"
 		class="relative mx-8 mb-8 min-h-0 flex-1 border-2 border-dashed border-gray-400"
 	>
 		<Stage
