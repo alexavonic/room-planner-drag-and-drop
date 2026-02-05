@@ -1,14 +1,52 @@
 <script lang="ts">
-	import { Layer, Rect } from 'svelte-konva';
+	import { Layer, Rect, Image } from 'svelte-konva';
 	import ResponsiveStage from '$lib/components/ResponsiveStage.svelte';
 	import SideBar from '$lib/components/SideBar.svelte';
 	import { createDragBound, dragCursor } from '$lib/utils/konva';
 
-	let rectX = $state(50);
-	let rectY = $state(50);
+	type CanvasImage = {
+		id: string;
+		src: string;
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+		image?: HTMLImageElement;
+	};
 
-	const rectWidth = 100;
-	const rectHeight = 100;
+	let images = $state<CanvasImage[]>([]);
+
+	function handleDrop(e: DragEvent) {
+		e.preventDefault();
+
+		const imageUrl = e.dataTransfer?.getData('imageUrl');
+		if (!imageUrl) return;
+
+		const stage = e.currentTarget as HTMLElement;
+		const rect = stage.getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+
+		// Load image and add to canvas
+		const img = new window.Image();
+		img.src = imageUrl;
+		img.crossOrigin = 'Anonymous';
+		img.onload = () => {
+			images.push({
+				id: crypto.randomUUID(),
+				src: imageUrl,
+				x: x - img.width / 2,
+				y: y - img.height / 2,
+				width: img.width,
+				height: img.height,
+				image: img
+			});
+		};
+	}
+
+	function handleDragOver(e: DragEvent) {
+		e.preventDefault();
+	}
 </script>
 
 <div class="flex h-full bg-slate-100">
@@ -17,22 +55,14 @@
 	<ResponsiveStage
 		title="Sidebar Demo"
 		description="This page will demonstrate sidebar functionality with Konva canvas."
+		ondrop={handleDrop}
+		ondragover={handleDragOver}
 	>
 		{#snippet children({ stageWidth, stageHeight })}
 			<Layer>
-				<Rect
-					bind:x={rectX}
-					bind:y={rectY}
-					width={rectWidth}
-					height={rectHeight}
-					fill="green"
-					draggable
-					dragBoundFunc={createDragBound(stageWidth, stageHeight, rectWidth, rectHeight)}
-					onmouseenter={dragCursor.grab}
-					onmouseleave={dragCursor.default}
-					onmousedown={dragCursor.grabbing}
-					onmouseup={dragCursor.grab}
-				/>
+				{#each images as img (img.id)}
+					<Image image={img.image} x={img.x} y={img.y} draggable={true} />
+				{/each}
 			</Layer>
 		{/snippet}
 	</ResponsiveStage>

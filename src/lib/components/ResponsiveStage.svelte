@@ -10,6 +10,8 @@
 		stage?: ReturnType<typeof Stage> | undefined;
 		oncanvasdown?: (e: MouseEvent) => void;
 		onkeydown?: (e: KeyboardEvent) => void;
+		ondrop?: (e: DragEvent) => void;
+		ondragover?: (e: DragEvent) => void;
 	} & KonvaEventHooks;
 
 	let {
@@ -19,6 +21,8 @@
 		description,
 		oncanvasdown,
 		onkeydown,
+		ondrop,
+		ondragover,
 		stage = $bindable(),
 		onpointerdblclick,
 		onpointerdown,
@@ -72,6 +76,8 @@
 			oncanvasdown?.(e);
 		}}
 		{onkeydown}
+		{ondrop}
+		{ondragover}
 		tabindex="0"
 		class="relative mx-8 mb-8 min-h-0 flex-1 border-2 border-dashed border-gray-400 bg-white"
 	>
