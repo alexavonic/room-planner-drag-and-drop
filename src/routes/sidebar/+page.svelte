@@ -20,6 +20,10 @@
 	let arrows = $state<CanvasArrow[]>([]);
 	let wedges = $state<CanvasWedge[]>([]);
 
+	// Cache loaded images to prevent duplicates
+	const imageCache = new Map<string, HTMLImageElement>();
+	const imageLoading = new Set<string>();
+
 	function handleDrop(e: DragEvent) {
 		e.preventDefault();
 
@@ -33,7 +37,7 @@
 		const y = e.clientY - rect.top;
 
 		if (shapeType === ShapeType.Image && imageSrc) {
-			addImageToCanvas(imageSrc, x, y);
+			initializeImage(imageSrc, x, y);
 		} else if (shapeType === ShapeType.Rect) {
 			addRectangleToCanvas(x, y);
 		} else if (shapeType === ShapeType.Circle) {
@@ -45,21 +49,43 @@
 		}
 	}
 
-	function addImageToCanvas(imageSrc: string, x: number, y: number) {
+	function initializeImage(imageSrc: string, x: number, y: number) {
+		// Check if image is already cached
+		if (imageCache.has(imageSrc)) {
+			const img = imageCache.get(imageSrc)!;
+			addImageToCanvas(img, x, y);
+			return;
+		}
+
+		// Skip if already loading
+		if (imageLoading.has(imageSrc)) return;
+
+		// Load new image
+		imageLoading.add(imageSrc);
 		const img = new window.Image();
-		img.src = imageSrc;
 		img.crossOrigin = 'Anonymous';
+
 		img.onload = () => {
-			images.push({
-				id: crypto.randomUUID(),
-				src: imageSrc,
-				x: x - img.width / 2,
-				y: y - img.height / 2,
-				width: img.width,
-				height: img.height,
-				image: img
-			});
+			if (!imageCache.has(imageSrc)) {
+				imageCache.set(imageSrc, img);
+				imageLoading.delete(imageSrc);
+				addImageToCanvas(img, x, y);
+			}
 		};
+		img.onerror = () => imageLoading.delete(imageSrc);
+		img.src = imageSrc;
+	}
+
+	function addImageToCanvas(img: HTMLImageElement, x: number, y: number) {
+		images.push({
+			id: crypto.randomUUID(),
+			src: img.src,
+			x: x - img.width / 2,
+			y: y - img.height / 2,
+			width: img.width,
+			height: img.height,
+			image: img
+		});
 	}
 
 	function addRectangleToCanvas(x: number, y: number) {
