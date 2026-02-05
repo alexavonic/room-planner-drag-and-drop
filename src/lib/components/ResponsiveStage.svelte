@@ -73,7 +73,7 @@
 		}}
 		{onkeydown}
 		tabindex="0"
-		class="relative mx-8 mb-8 min-h-0 flex-1 border-2 border-dashed border-gray-400"
+		class="relative mx-8 mb-8 min-h-0 flex-1 border-2 border-dashed border-gray-400 bg-white"
 	>
 		<Stage
 			width={stageWidth}
