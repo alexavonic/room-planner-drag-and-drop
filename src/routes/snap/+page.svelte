@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Layer, Rect, Line } from 'svelte-konva';
 	import ResponsiveStage from '$lib/components/ResponsiveStage.svelte';
-	import { dragCursor } from '$lib/utils/konva';
+	import { createRotatedDragBound, dragCursor } from '$lib/utils/konva';
 	import Konva from 'konva';
 
-	const GUIDELINE_OFFSET = 5;
+	const GUIDELINE_OFFSET = 5; // Snap threshold in pixels
 
 	type Rectangle = {
 		id: number;
@@ -257,40 +257,192 @@
 	}
 </script>
 
-<ResponsiveStage
-	title="Snap to Grid Demo"
-	description="Drag the rectangles to see snapping guides. They will snap to stage borders, center, and edges of other shapes."
->
-	{#snippet children({ stageWidth, stageHeight })}
-		<Layer>
-			{#each rectangles as rect (rect.id)}
-				<Rect
-					bind:x={rect.x}
-					bind:y={rect.y}
-					width={rect.width}
-					height={rect.height}
-					fill={rect.fill}
-					rotation={rect.rotation}
-					draggable
-					ondragmove={handleDragMove(rect.id, stageWidth, stageHeight)}
-					ondragend={handleDragEnd}
-					onmouseenter={dragCursor.grab}
-					onmouseleave={dragCursor.default}
-					onmousedown={dragCursor.grabbing}
-					onmouseup={dragCursor.grab}
-				/>
-			{/each}
+<div class="flex h-full w-full">
+	<ResponsiveStage
+		title="Snap to Grid Demo"
+		description="Drag the rectangles to see snapping guides. They will snap to stage borders, center, and edges of other shapes."
+	>
+		{#snippet children({ stageWidth, stageHeight })}
+			<Layer>
+				{#each rectangles as rect (rect.id)}
+					<Rect
+						bind:x={rect.x}
+						bind:y={rect.y}
+						width={rect.width}
+						height={rect.height}
+						fill={rect.fill}
+						rotation={rect.rotation}
+						draggable
+						dragBoundFunc={createRotatedDragBound(
+							stageWidth,
+							stageHeight,
+							rect.width,
+							rect.height,
+							rect.rotation
+						)}
+						ondragmove={handleDragMove(rect.id, stageWidth, stageHeight)}
+						ondragend={handleDragEnd}
+						onmouseenter={dragCursor.grab}
+						onmouseleave={dragCursor.default}
+						onmousedown={dragCursor.grabbing}
+						onmouseup={dragCursor.grab}
+					/>
+				{/each}
 
-			{#each guideLines as line (line.orientation + line.x + line.y)}
-				<Line
-					points={line.points}
-					x={line.x}
-					y={line.y}
-					stroke="rgb(0, 161, 255)"
-					strokeWidth={1}
-					dash={[4, 6]}
-				/>
-			{/each}
-		</Layer>
-	{/snippet}
-</ResponsiveStage>
+				{#each guideLines as line (line.orientation + line.x + line.y)}
+					<Line
+						points={line.points}
+						x={line.x}
+						y={line.y}
+						stroke="rgb(0, 161, 255)"
+						strokeWidth={1}
+						dash={[4, 6]}
+					/>
+				{/each}
+			</Layer>
+		{/snippet}
+	</ResponsiveStage>
+
+	<article class="documentation w-2/5 overflow-y-auto">
+		<h2>How Snapping Works</h2>
+
+		<section>
+			<h3>Overview</h3>
+			<p>
+				The snapping system automatically aligns dragged shapes to stage boundaries (edges and
+				center) and other shapes' edges. When a shape gets within 5 pixels of a snap point, it
+				automatically aligns and shows blue dashed guide lines.
+			</p>
+		</section>
+
+		<section>
+			<h3>The Snapping Process</h3>
+			<ol>
+				<li>
+					<strong>Calculate Bounding Box:</strong> When a rectangle is rotated, we calculate its axis-aligned
+					bounding box to determine its visual edges.
+				</li>
+				<li>
+					<strong>Find Snap Points:</strong> Collect all possible snap positions from stage borders (0,
+					center, width/height) and all edges of other shapes.
+				</li>
+				<li>
+					<strong>Detect Proximity:</strong> For each edge of the dragged shape, check if it's within
+					5 pixels of any snap point.
+				</li>
+				<li>
+					<strong>Select Closest:</strong> Choose the closest snap for horizontal and vertical axes independently.
+				</li>
+				<li>
+					<strong>Apply Snap:</strong> Adjust the shape's position using the calculated offset and draw
+					guide lines.
+				</li>
+			</ol>
+		</section>
+
+		<section>
+			<h3>Key Features</h3>
+			<ul>
+				<li><strong>Rotation Support:</strong> Rotated shapes snap using their visual edges</li>
+				<li><strong>Independent Axes:</strong> Horizontal and vertical snapping work separately</li>
+				<li>
+					<strong>5px Threshold:</strong> Balances helpful snapping with user control (configurable
+					via
+					<code>GUIDELINE_OFFSET</code>)
+				</li>
+				<li><strong>Visual Feedback:</strong> Blue dashed lines show active snap alignment</li>
+				<li><strong>Multiple Snap Points:</strong> Left, center, and right edges for each shape</li>
+			</ul>
+		</section>
+
+		<section>
+			<h3>Implementation Highlights</h3>
+			<p>
+				The implementation uses helper functions to break down the complex snapping logic into
+				focused, reusable components:
+			</p>
+			<ul>
+				<li><code>getClientRect()</code> - Calculates bounding box for rotated rectangles</li>
+				<li><code>getLineGuideStops()</code> - Finds all possible snap points</li>
+				<li><code>getObjectSnappingEdges()</code> - Determines the dragged shape's edges</li>
+				<li><code>findAxisSnaps()</code> - Finds snaps within threshold for each axis</li>
+				<li><code>getGuides()</code> - Selects the closest snap per axis</li>
+				<li><code>calculateSnappedPosition()</code> - Computes the final snapped position</li>
+			</ul>
+			<p>
+				Direct Konva manipulation (<code>target.absolutePosition()</code>) ensures smooth, real-time
+				snapping during drag operations without triggering Svelte re-renders.
+			</p>
+		</section>
+
+		<section>
+			<h3>Try It Out</h3>
+			<ul>
+				<li>Drag shapes near the stage edges to see edge snapping</li>
+				<li>Drag to the center to trigger center line snapping</li>
+				<li>Align shapes with each other using their edges</li>
+				<li>Notice how rotated shapes snap using their visual bounding box</li>
+			</ul>
+		</section>
+	</article>
+</div>
+
+<style>
+	.documentation {
+		padding: 2rem;
+		border-radius: 8px;
+		font-family:
+			system-ui,
+			-apple-system,
+			sans-serif;
+		line-height: 1.6;
+	}
+
+	.documentation h2 {
+		color: #2c3e50;
+		margin-bottom: 1.5rem;
+		font-size: 1.8rem;
+		border-bottom: 2px solid #3498db;
+		padding-bottom: 0.5rem;
+	}
+
+	.documentation h3 {
+		color: #34495e;
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		font-size: 1.3rem;
+	}
+
+	.documentation section {
+		margin-bottom: 2rem;
+	}
+
+	.documentation p {
+		color: #555;
+		margin-bottom: 1rem;
+	}
+
+	.documentation ul,
+	.documentation ol {
+		color: #555;
+		padding-left: 1.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.documentation li {
+		margin-bottom: 0.5rem;
+	}
+
+	.documentation code {
+		background: #e8e8e8;
+		padding: 0.2rem 0.4rem;
+		border-radius: 3px;
+		font-family: 'Courier New', monospace;
+		font-size: 0.9em;
+		color: #c7254e;
+	}
+
+	.documentation strong {
+		color: #2c3e50;
+	}
+</style>

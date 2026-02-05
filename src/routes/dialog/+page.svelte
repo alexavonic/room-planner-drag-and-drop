@@ -5,7 +5,7 @@
 	import type { KonvaMouseEvent } from 'svelte-konva';
 
 	import ResponsiveStage from '$lib/components/ResponsiveStage.svelte';
-	import { createDragBound, dragCursor } from '$lib/utils/konva';
+	import { createRotatedDragBound, dragCursor } from '$lib/utils/konva';
 
 	interface Rectangle {
 		name: string;
@@ -304,11 +304,12 @@
 			{#each rectangles as rectangle}
 				<Rect
 					{...rectangle}
-					dragBoundFunc={createDragBound(
+					dragBoundFunc={createRotatedDragBound(
 						stageWidth,
 						stageHeight,
 						rectangle.width,
-						rectangle.height
+						rectangle.height,
+						rectangle.rotation
 					)}
 					onmouseenter={dragCursor.grab}
 					onmouseleave={dragCursor.default}
