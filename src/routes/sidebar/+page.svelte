@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Layer, Rect, Image, Circle, Arrow, Wedge } from 'svelte-konva';
+	import { Layer, Rect, Image, Circle, Arrow, Wedge, Stage } from 'svelte-konva';
 
 	import ResponsiveStage from '$lib/components/ResponsiveStage.svelte';
 	import SideBar from '$lib/components/SideBar.svelte';
@@ -19,10 +19,33 @@
 	let circles = $state<CanvasCircle[]>([]);
 	let arrows = $state<CanvasArrow[]>([]);
 	let wedges = $state<CanvasWedge[]>([]);
+	let stage = $state<ReturnType<typeof Stage>>();
 
 	// Cache loaded images to prevent duplicates
 	const imageCache = new Map<string, HTMLImageElement>();
 	const imageLoading = new Set<string>();
+
+	function onCanvasShapeClick(
+		e: MouseEvent,
+		shapeType: ShapeType,
+		imageSrc?: string,
+		gradient?: string
+	) {
+		e.preventDefault();
+
+		if (shapeType === ShapeType.Background) {
+			setCanvasBackground(imageSrc, gradient);
+			return;
+		}
+
+		// Get center of canvas for new shape placement
+		const rect = stage?.node.container().getBoundingClientRect();
+		if (!rect) return;
+		const x = rect.width / 2;
+		const y = rect.height / 2;
+
+		handleShapeType(shapeType, x, y, imageSrc);
+	}
 
 	function handleDrop(e: DragEvent) {
 		e.preventDefault();
@@ -36,6 +59,10 @@
 		const x = e.clientX - rect.left;
 		const y = e.clientY - rect.top;
 
+		handleShapeType(shapeType, x, y, imageSrc);
+	}
+
+	function handleShapeType(shapeType: ShapeType, x: number, y: number, imageSrc?: string) {
 		if (shapeType === ShapeType.Image && imageSrc) {
 			initializeImage(imageSrc, x, y);
 		} else if (shapeType === ShapeType.Rect) {
@@ -77,13 +104,16 @@
 	}
 
 	function addImageToCanvas(img: HTMLImageElement, x: number, y: number) {
+		const fixedWidth = 100;
+		const aspectRatio = img.width / img.height;
+		const fixedHeight = fixedWidth / aspectRatio;
 		images.push({
 			id: crypto.randomUUID(),
 			src: img.src,
-			x: x - img.width / 2,
-			y: y - img.height / 2,
-			width: img.width,
-			height: img.height,
+			x: x - fixedWidth / 2,
+			y: y - fixedHeight / 2,
+			width: fixedWidth,
+			height: fixedHeight,
 			image: img
 		});
 	}
@@ -134,24 +164,46 @@
 		});
 	}
 
+	function setCanvasBackground(imageSrc?: string, gradient?: string) {
+		const canvasContainer = stage?.node.container();
+		if (!canvasContainer) return;
+
+		if (!imageSrc && !gradient) {
+			canvasContainer.style.backgroundImage = '';
+			return;
+		}
+
+		canvasContainer.style.backgroundImage = gradient ? gradient : `url(${imageSrc})`;
+		canvasContainer.style.backgroundSize = 'cover';
+		canvasContainer.style.backgroundPosition = 'center';
+	}
+
 	function handleDragOver(e: DragEvent) {
 		e.preventDefault();
 	}
 </script>
 
 <div class="flex h-full bg-slate-100">
-	<SideBar />
+	<SideBar {onCanvasShapeClick} />
 
 	<ResponsiveStage
 		title="Sidebar Demo"
 		description="This page will demonstrate sidebar functionality with Konva canvas."
 		ondrop={handleDrop}
 		ondragover={handleDragOver}
+		bind:stage
 	>
 		{#snippet children()}
 			<Layer>
 				{#each images as img (img.id)}
-					<Image image={img.image} x={img.x} y={img.y} draggable={true} />
+					<Image
+						image={img.image}
+						x={img.x}
+						y={img.y}
+						width={img.width}
+						height={img.height}
+						draggable={true}
+					/>
 				{/each}
 				{#each rectangles as rect (rect.id)}
 					<Rect

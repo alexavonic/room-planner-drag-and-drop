@@ -3,7 +3,8 @@ export const ShapeType = {
 	Circle: 'circle',
 	Arrow: 'arrow',
 	Wedge: 'wedge',
-	Image: 'image'
+	Image: 'image',
+	Background: 'background'
 } as const;
 
 export type ShapeType = (typeof ShapeType)[keyof typeof ShapeType];

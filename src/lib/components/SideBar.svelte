@@ -15,7 +15,24 @@
 	import UnbrandedMicSquare from '$lib/assets/Unbranded_Square.png';
 	import YamahaRMCG from '$lib/assets/Yamaha_RM-CG.png';
 
+	import BGAbstract from '$lib/assets/bg-abstract.jpg';
+	import BGOffice1 from '$lib/assets/bg-office1.jpg';
+	import BGOffice2 from '$lib/assets/bg-office2.jpg';
+	import BGOffice3 from '$lib/assets/bg-office3.jpg';
+	import BGOffice4 from '$lib/assets/bg-office4.png';
+
 	import { ShapeType } from '$lib/utils/types';
+
+	type Props = {
+		onCanvasShapeClick?: (
+			e: MouseEvent,
+			shapeType: ShapeType,
+			imageSrc?: string,
+			gradient?: string
+		) => void;
+	};
+
+	let { onCanvasShapeClick }: Props = $props();
 
 	const Category = {
 		Furniture: 'Furniture',
@@ -87,12 +104,67 @@
 					{@render imageItem(UnbrandedMicRound)}
 					{@render imageItem(UnbrandedMicSquare)}
 				{:else if currentCategory === Category.Background}
-					C
+					<p class="col-span-2 mt-2 text-sm text-slate-600">Pictures</p>
+					{@render backgroundItem()}
+					{@render backgroundItem(BGAbstract)}
+					{@render backgroundItem(BGOffice1)}
+					{@render backgroundItem(BGOffice2)}
+					{@render backgroundItem(BGOffice3)}
+					{@render backgroundItem(BGOffice4)}
+
+					<p class="col-span-2 mt-8 text-sm text-slate-600">Gradients</p>
+					{@render backgroundItem(undefined, 'linear-gradient(to right, #e2e8f0, #94a3b8)')}
+					{@render backgroundItem(
+						undefined,
+						'linear-gradient(0deg,rgba(128, 215, 217, 1) 0%, rgba(255, 255, 255, 1) 100%)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'linear-gradient(89deg,rgba(76, 144, 207, 1) 0%, rgba(255, 255, 255, 1) 100%)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'linear-gradient(45deg, #4159d0 0.000%, #c84fc0 50.000%, #ffcd70 100.000%)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'linear-gradient(0deg,rgba(34, 193, 195, 1) 0%, rgba(253, 187, 45, 1) 100%)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'radial-gradient(circle,rgba(63, 94, 251, 1) 0%, rgba(252, 70, 107, 1) 100%)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'conic-gradient(from 45deg, #0a4a59 0.000deg, #0a4a59 27.692deg, #0b527c calc(27.692deg + 0.1deg), #0b527c 55.385deg, #0d5c9f calc(55.385deg + 0.1deg), #0d5c9f 83.077deg, #1068c2 calc(83.077deg + 0.1deg), #1068c2 110.769deg, #1276e3 calc(110.769deg + 0.1deg), #1276e3 138.462deg, #1585ff calc(138.462deg + 0.1deg), #1585ff 166.154deg, #1896ff calc(166.154deg + 0.1deg), #1896ff 193.846deg, #1ca9ff calc(193.846deg + 0.1deg), #1ca9ff 221.538deg, #1fbcff calc(221.538deg + 0.1deg), #1fbcff 249.231deg, #23d1ff calc(249.231deg + 0.1deg), #23d1ff 276.923deg, #27e6ff calc(276.923deg + 0.1deg), #27e6ff 304.615deg, #2bfbff calc(304.615deg + 0.1deg), #2bfbff 332.308deg, #2fffff calc(332.308deg + 0.1deg) 360.000deg)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'conic-gradient(from 210deg, #c5bbb8 0.000deg, #c5bbb8 24.000deg, #b8b5b8 calc(24.000deg + 0.1deg), #b8b5b8 48.000deg, #a9afb7 calc(48.000deg + 0.1deg), #a9afb7 72.000deg, #9aa8b5 calc(72.000deg + 0.1deg), #9aa8b5 96.000deg, #8ba1b3 calc(96.000deg + 0.1deg), #8ba1b3 120.000deg, #7d98af calc(120.000deg + 0.1deg), #7d98af 144.000deg, #7090ab calc(144.000deg + 0.1deg), #7090ab 168.000deg, #6587a6 calc(168.000deg + 0.1deg), #6587a6 192.000deg, #5c7ea1 calc(192.000deg + 0.1deg), #5c7ea1 216.000deg, #55759b calc(216.000deg + 0.1deg), #55759b 240.000deg, #516c94 calc(240.000deg + 0.1deg), #516c94 264.000deg, #4f638d calc(264.000deg + 0.1deg), #4f638d 288.000deg, #505a85 calc(288.000deg + 0.1deg), #505a85 312.000deg, #54537d calc(312.000deg + 0.1deg), #54537d 336.000deg, #5b4b74 calc(336.000deg + 0.1deg) 360.000deg)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'linear-gradient(90deg,rgba(155, 42, 149, 1) 0%, rgba(87, 152, 199, 1) 50%, rgba(83, 237, 163, 1) 100%)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'linear-gradient(90deg,rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(171, 0, 0, 1) 100%)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'linear-gradient(139deg,rgba(99, 206, 230, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(113, 245, 203, 1) 100%)'
+					)}
+					{@render backgroundItem(
+						undefined,
+						'radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgba(184, 224, 255, 1) 50%, rgba(182, 168, 255, 1) 100%)'
+					)}
 				{/if}
 			</div>
 		</div>
 	{/if}
 </div>
+
+<!-- Snippet Definitions -->
 
 {#snippet menuCategory(icon: string, title: Category)}
 	<button
@@ -106,53 +178,32 @@
 {/snippet}
 
 {#snippet imageItem(imageSrc: string)}
-	<div
-		class="flex h-16 w-full cursor-pointer items-center justify-center rounded bg-slate-200 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-300"
-	>
-		<div
-			class="flex h-full w-full items-center justify-center"
+	<div class="flex h-16 w-full rounded bg-slate-200 transition-colors hover:bg-gray-300">
+		<button
+			class="flex h-full w-full cursor-pointer items-center justify-center"
 			draggable="true"
 			ondragstart={(e) => handleDragStart(e, ShapeType.Image, imageSrc)}
-			role="button"
-			tabindex="0"
+			onclick={(e) => onCanvasShapeClick?.(e, ShapeType.Image, imageSrc)}
+			title="Add Image"
 		>
-			<img class="h-12" src={imageSrc} alt="" />
-		</div>
+			<img class="h-12 object-cover" src={imageSrc} alt="" />
+		</button>
 	</div>
 {/snippet}
 
 {#snippet shapeItem(shapeType: ShapeType)}
-	<div
-		class="flex h-16 w-full cursor-pointer items-center justify-center rounded bg-slate-200 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-300"
-	>
-		{#if shapeType === ShapeType.Rect}
-			<div
-				class="flex h-full w-full items-center justify-center"
-				draggable="true"
-				ondragstart={(e) => handleDragStart(e, ShapeType.Rect)}
-				role="button"
-				tabindex="0"
-			>
+	<div class="flex h-16 w-full rounded bg-slate-200 transition-colors hover:bg-gray-300">
+		<button
+			class="flex h-full w-full cursor-pointer items-center justify-center"
+			draggable="true"
+			ondragstart={(e) => handleDragStart(e, shapeType)}
+			onclick={(e) => onCanvasShapeClick?.(e, shapeType)}
+		>
+			{#if shapeType === ShapeType.Rect}
 				<div class="h-12 w-16 rounded bg-indigo-400"></div>
-			</div>
-		{:else if shapeType === ShapeType.Circle}
-			<div
-				class="flex h-full w-full items-center justify-center"
-				draggable="true"
-				ondragstart={(e) => handleDragStart(e, ShapeType.Circle)}
-				role="button"
-				tabindex="0"
-			>
+			{:else if shapeType === ShapeType.Circle}
 				<div class="h-12 w-12 rounded-full bg-red-400"></div>
-			</div>
-		{:else if shapeType === ShapeType.Arrow}
-			<div
-				class="flex h-full w-full items-center justify-center"
-				draggable="true"
-				ondragstart={(e) => handleDragStart(e, ShapeType.Arrow)}
-				role="button"
-				tabindex="0"
-			>
+			{:else if shapeType === ShapeType.Arrow}
 				<svg
 					width="48"
 					height="48"
@@ -168,15 +219,7 @@
 						stroke-linejoin="round"
 					/>
 				</svg>
-			</div>
-		{:else if shapeType === ShapeType.Wedge}
-			<div
-				class="flex h-full w-full items-center justify-center"
-				draggable="true"
-				ondragstart={(e) => handleDragStart(e, ShapeType.Wedge)}
-				role="button"
-				tabindex="0"
-			>
+			{:else if shapeType === ShapeType.Wedge}
 				<svg
 					width="48"
 					height="48"
@@ -191,7 +234,21 @@
 						stroke-width="2"
 					/>
 				</svg>
-			</div>
-		{/if}
+			{/if}
+		</button>
 	</div>
+{/snippet}
+
+{#snippet backgroundItem(imageSrc?: string, gradient?: string)}
+	<button
+		class="flex h-16 w-full cursor-pointer items-center justify-center rounded border-gray-400 bg-slate-200 text-sm font-medium text-gray-800 transition-colors hover:border hover:bg-gray-300"
+		style={gradient ? `background-image: ${gradient}` : ''}
+		onclick={(e) => onCanvasShapeClick?.(e, ShapeType.Background, imageSrc, gradient)}
+	>
+		{#if imageSrc}
+			<img class="h-16 object-contain" loading="lazy" width="100" src={imageSrc} alt="" />
+		{:else if !gradient}
+			None
+		{/if}
+	</button>
 {/snippet}
