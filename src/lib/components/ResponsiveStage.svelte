@@ -7,6 +7,7 @@
 		overlay?: Snippet;
 		title?: string;
 		description?: string;
+		draggable?: boolean;
 		stage?: ReturnType<typeof Stage> | undefined;
 		oncanvasdown?: (e: MouseEvent) => void;
 		onkeydown?: (e: KeyboardEvent) => void;
@@ -23,6 +24,7 @@
 		onkeydown,
 		ondrop,
 		ondragover,
+		draggable,
 		stage = $bindable(),
 		onpointerdblclick,
 		onpointerdown,
@@ -30,7 +32,8 @@
 		onpointermove,
 		onmouseout,
 		onmousedown,
-		ontouchstart
+		ontouchstart,
+		onwheel
 	}: Props = $props();
 
 	let stageWidth = $state(0);
@@ -84,6 +87,7 @@
 		<Stage
 			width={stageWidth}
 			height={stageHeight}
+			{draggable}
 			bind:this={stage}
 			{onpointerdblclick}
 			{onpointerdown}
@@ -92,6 +96,7 @@
 			{onmouseout}
 			{onmousedown}
 			{ontouchstart}
+			{onwheel}
 		>
 			{@render children({ stageWidth, stageHeight })}
 		</Stage>

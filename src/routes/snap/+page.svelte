@@ -259,7 +259,7 @@
 
 <div class="flex h-full w-full">
 	<ResponsiveStage
-		title="Snap to Grid Demo"
+		title="Snap to Objects Demo"
 		description="Drag the rectangles to see snapping guides. They will snap to stage borders, center, and edges of other shapes."
 	>
 		{#snippet children({ stageWidth, stageHeight })}

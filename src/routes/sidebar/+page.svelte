@@ -21,7 +21,7 @@
 	let wedges = $state<CanvasWedge[]>([]);
 	let stage = $state<ReturnType<typeof Stage>>();
 
-	// Cache loaded images to prevent duplicates
+	// Cache loaded images to prevent duplicate loads and speed up subsequent placements.
 	const imageCache = new Map<string, HTMLImageElement>();
 	const imageLoading = new Set<string>();
 
@@ -188,7 +188,7 @@
 
 	<ResponsiveStage
 		title="Sidebar Demo"
-		description="This page will demonstrate sidebar functionality with Konva canvas."
+		description="This page demonstrates sidebar functionality. Use the sidebar to add shapes and images to the canvas, or set a background. You can also drag and drop items from the sidebar onto the canvas."
 		ondrop={handleDrop}
 		ondragover={handleDragOver}
 		bind:stage

@@ -15,15 +15,27 @@
 		},
 		{
 			path: '/snap',
-			title: 'Snap to Grid',
-			description: 'Objects that snap to grid for precise placement',
+			title: 'Snap to Objects',
+			description: 'Objects that snap to other objects for precise placement',
 			color: 'bg-purple-500'
 		},
 		{
 			path: '/sidebar',
 			title: 'Sidebar',
-			description: 'Canvas with sidebar controls and object management',
+			description: 'Sidebar with drag-and-drop shape/image creation and background setting',
 			color: 'bg-green-500'
+		},
+		{
+			path: '/zoom',
+			title: 'Zoom & Pan',
+			description: 'Zoom and pan functionality for navigating the canvas',
+			color: 'bg-yellow-500'
+		},
+		{
+			path: '/room',
+			title: 'Room Planner',
+			description: 'Combination of all features to create a room planner application',
+			color: 'bg-pink-500'
 		}
 	];
 </script>
@@ -44,10 +56,10 @@
 					class="group block transform rounded-lg bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
 				>
 					<div class="p-8">
-						<div
-							class="{demo.color} mb-4 h-16 w-16 rounded-lg transition-transform group-hover:scale-110"
-						></div>
 						<h2 class="mb-2 text-2xl font-bold text-gray-800">{demo.title}</h2>
+						<div
+							class="{demo.color} mb-4 h-1.5 w-24 rounded-lg transition-all duration-300 ease-in-out group-hover:h-1 group-hover:w-full"
+						></div>
 						<p class="text-gray-600">{demo.description}</p>
 						<div class="mt-4 flex items-center font-medium text-blue-600">
 							<span>View Demo</span>

@@ -6,7 +6,9 @@
 		{ path: '/drag', label: 'Drag' },
 		{ path: '/dialog', label: 'Dialog' },
 		{ path: '/snap', label: 'Snap' },
-		{ path: '/sidebar', label: 'Sidebar' }
+		{ path: '/sidebar', label: 'Sidebar' },
+		{ path: '/zoom', label: 'Zoom & Pan' },
+		{ path: '/room', label: 'Room Planner' }
 	];
 </script>
 
